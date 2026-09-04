@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +27,7 @@ class SessionScreen extends ConsumerStatefulWidget {
 class _SessionScreenState extends ConsumerState<SessionScreen> {
   BreathPhase _currentPhase = BreathPhase.inhale;
   BreathPhase? _lastPhase;
+  StreamSubscription<BreathingState>? _phaseSubscription;
 
   @override
   void initState() {
@@ -46,7 +48,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
 
     // Listen for phase changes to trigger haptics
     final engine = ref.read(breathingEngineProvider);
-    engine.stateStream.listen((state) {
+    _phaseSubscription = engine.stateStream.listen((state) {
       if (mounted && state.phase != _lastPhase) {
         _lastPhase = state.phase;
         HapticFeedback.lightImpact();
@@ -55,12 +57,19 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    _phaseSubscription?.cancel();
+    super.dispose();
+  }
+
   Future<void> _stopSession() async {
-    // Clean up adaptive pacer
+    // Capture the summary before tearing down the pacer — stop() records
+    // the pace that was active when the session ended.
+    final summary = ref.read(sessionProvider.notifier).stop();
     ref.read(adaptivePacerProvider.notifier).state = null;
     ref.read(activePaceProvider.notifier).state = null;
 
-    final summary = ref.read(sessionProvider.notifier).stop();
     await SessionRepository.save(summary);
     if (mounted) {
       context.go('/summary', extra: summary);

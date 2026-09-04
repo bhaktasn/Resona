@@ -30,6 +30,10 @@ class SummaryScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 40),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
               // Duration
               _StatCard(
                 label: 'Duration',
@@ -47,6 +51,15 @@ class SummaryScreen extends ConsumerWidget {
                         value: '${summary.avgHeartRate.round()}',
                         unit: 'bpm',
                         icon: Icons.favorite_outline,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _StatCard(
+                        label: 'Min HR',
+                        value: '${summary.minHeartRate}',
+                        unit: 'bpm',
+                        icon: Icons.arrow_downward,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -81,6 +94,38 @@ class SummaryScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+                // HRV + coherence time stats
+                Row(
+                  children: [
+                    Expanded(
+                      child: _StatCard(
+                        label: 'HRV (RMSSD)',
+                        value: summary.rmssd.toStringAsFixed(0),
+                        unit: 'ms',
+                        icon: Icons.monitor_heart_outlined,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _StatCard(
+                        label: 'In Coherence',
+                        value: summary.pctHighCoherence.toStringAsFixed(0),
+                        unit: '%',
+                        icon: Icons.check_circle_outline,
+                      ),
+                    ),
+                  ],
+                ),
+                if (summary.endBreathsPerMinute > 0) ...[
+                  const SizedBox(height: 16),
+                  _StatCard(
+                    label: 'Ending Pace',
+                    value: summary.endBreathsPerMinute.toStringAsFixed(1),
+                    unit: 'breaths/min',
+                    icon: Icons.air,
+                  ),
+                ],
                 // HR chart
                 if (summary.hrTimeSeries.length > 2) ...[
                   const SizedBox(height: 32),
@@ -101,7 +146,11 @@ class SummaryScreen extends ConsumerWidget {
                   ),
                 ],
               ],
-              const Spacer(),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

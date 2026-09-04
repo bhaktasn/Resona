@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,22 +19,25 @@ class BreathingCircle extends ConsumerStatefulWidget {
 class _BreathingCircleState extends ConsumerState<BreathingCircle>
     with SingleTickerProviderStateMixin {
   BreathingState _breathState = BreathingState.idle;
+  StreamSubscription<BreathingState>? _subscription;
+  late final BreathingEngine _engine;
 
   @override
   void initState() {
     super.initState();
-    final engine = ref.read(breathingEngineProvider);
-    engine.stateStream.listen((state) {
+    _engine = ref.read(breathingEngineProvider);
+    _subscription = _engine.stateStream.listen((state) {
       if (mounted) {
         setState(() => _breathState = state);
       }
     });
-    engine.start(this);
+    _engine.start(this);
   }
 
   @override
   void dispose() {
-    ref.read(breathingEngineProvider).stop();
+    _subscription?.cancel();
+    _engine.stop();
     super.dispose();
   }
 

@@ -30,12 +30,12 @@ class SettingsScreen extends ConsumerWidget {
           // Inhale duration
           _DurationSlider(
             label: 'Inhale',
-            value: settings.inhaleDuration.inSeconds.toDouble(),
+            value: settings.inhaleDuration.inMilliseconds / 1000.0,
             min: 3,
             max: 8,
             onChanged: (v) {
               ref.read(breathingSettingsProvider.notifier).update(
-                settings.copyWith(inhaleDuration: Duration(seconds: v.round())),
+                settings.copyWith(inhaleDuration: _toDuration(v)),
               );
             },
           ),
@@ -43,12 +43,12 @@ class SettingsScreen extends ConsumerWidget {
           // Exhale duration
           _DurationSlider(
             label: 'Exhale',
-            value: settings.exhaleDuration.inSeconds.toDouble(),
+            value: settings.exhaleDuration.inMilliseconds / 1000.0,
             min: 3,
             max: 8,
             onChanged: (v) {
               ref.read(breathingSettingsProvider.notifier).update(
-                settings.copyWith(exhaleDuration: Duration(seconds: v.round())),
+                settings.copyWith(exhaleDuration: _toDuration(v)),
               );
             },
           ),
@@ -56,12 +56,12 @@ class SettingsScreen extends ConsumerWidget {
           // Inhale hold
           _DurationSlider(
             label: 'Hold after inhale',
-            value: settings.inhaleHoldDuration.inSeconds.toDouble(),
+            value: settings.inhaleHoldDuration.inMilliseconds / 1000.0,
             min: 0,
             max: 4,
             onChanged: (v) {
               ref.read(breathingSettingsProvider.notifier).update(
-                settings.copyWith(inhaleHoldDuration: Duration(seconds: v.round())),
+                settings.copyWith(inhaleHoldDuration: _toDuration(v)),
               );
             },
           ),
@@ -69,12 +69,12 @@ class SettingsScreen extends ConsumerWidget {
           // Exhale hold
           _DurationSlider(
             label: 'Hold after exhale',
-            value: settings.exhaleHoldDuration.inSeconds.toDouble(),
+            value: settings.exhaleHoldDuration.inMilliseconds / 1000.0,
             min: 0,
             max: 4,
             onChanged: (v) {
               ref.read(breathingSettingsProvider.notifier).update(
-                settings.copyWith(exhaleHoldDuration: Duration(seconds: v.round())),
+                settings.copyWith(exhaleHoldDuration: _toDuration(v)),
               );
             },
           ),
@@ -109,6 +109,10 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
+/// Snap slider values to the nearest half second.
+Duration _toDuration(double seconds) =>
+    Duration(milliseconds: ((seconds * 2).round() * 500));
+
 class _DurationSlider extends StatelessWidget {
   final String label;
   final double value;
@@ -134,16 +138,16 @@ class _DurationSlider extends StatelessWidget {
           children: [
             Text(label, style: const TextStyle(color: AppConstants.textPrimary, fontSize: 15)),
             Text(
-              '${value.round()}s',
+              '${value.toStringAsFixed(1)}s',
               style: const TextStyle(color: AppConstants.primaryTeal, fontSize: 15, fontWeight: FontWeight.w600),
             ),
           ],
         ),
         Slider(
-          value: value,
+          value: value.clamp(min, max),
           min: min,
           max: max,
-          divisions: (max - min).round(),
+          divisions: ((max - min) * 2).round(),
           activeColor: AppConstants.primaryTeal,
           inactiveColor: AppConstants.cardDark,
           onChanged: onChanged,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants.dart';
 import '../widgets/connection_status_badge.dart';
+import '../widgets/resona_logo.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -25,6 +26,9 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
               const Spacer(flex: 2),
+              // Logo
+              const ResonaLogo(size: 110),
+              const SizedBox(height: 28),
               // App name
               const Text(
                 'Resona',

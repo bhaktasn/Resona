@@ -1,17 +1,17 @@
-# resona
+# Resona
 
-A new Flutter project.
+Resonance breathing with live WHOOP heart-rate feedback.
 
-## Getting Started
+## Install on an Android phone
 
-This project is a starting point for a Flutter application.
+1. [Install Flutter](https://docs.flutter.dev/get-started/install), then enable **Developer options** and **USB debugging** on your phone.
+2. Connect the phone by USB and approve the debugging prompt.
+3. From this project folder, run:
 
-A few resources to get you started if this is your first Flutter project:
+```sh
+flutter pub get
+flutter devices
+flutter run --release
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Keep Bluetooth enabled and grant the requested nearby-device permissions when Resona opens.
